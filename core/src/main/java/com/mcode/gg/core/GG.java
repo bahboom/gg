@@ -20,8 +20,10 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 public class GG implements ApplicationListener {
 	public Lights lights;
 	public PerspectiveCamera cam;
-	public Model model;
-	public ModelInstance instance;
+	public Model moonModel;
+	public ModelInstance moonInstance;
+	public Model earthModel;
+	public ModelInstance earthInstance;
 	public ModelBatch modelBatch;
 	public CameraInputController camController;
 
@@ -41,10 +43,17 @@ public class GG implements ApplicationListener {
 		cam.update();
 
 		ModelBuilder modelBuilder = new ModelBuilder();
-		model = modelBuilder.createSphere(5f, 5f, 5f, 50, 50,
-				new Material(ColorAttribute.createDiffuse(Color.RED)),
+		moonModel = modelBuilder.createSphere(0.5f, 0.5f, 0.5f, 20, 20,
+				new Material(ColorAttribute.createDiffuse(Color.GRAY)),
 				Usage.Position | Usage.Normal);
-		instance = new ModelInstance(model);
+		moonInstance = new ModelInstance(moonModel);
+		moonInstance.transform.translate(-10, 0, 0);
+		
+		earthModel = modelBuilder.createSphere(5f, 5f, 5f, 50, 50,
+				new Material(ColorAttribute.createDiffuse(Color.BLUE)),
+				Usage.Position | Usage.Normal);
+		earthInstance = new ModelInstance(earthModel);
+		
 		
 		camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
@@ -58,11 +67,13 @@ public class GG implements ApplicationListener {
 	public void render () {
 		camController.update();
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		Gdx.gl.glClearColor(0, 0.7f, 0.7f, 0);
+		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
+		//moonInstance.transform.ro
 		modelBatch.begin(cam);
-		modelBatch.render(instance, lights);
+		modelBatch.render(moonInstance, lights);
+		modelBatch.render(earthInstance, lights);
 		modelBatch.end();
 	}
 
@@ -76,7 +87,7 @@ public class GG implements ApplicationListener {
 
 	@Override
 	public void dispose () {
-		model.dispose();
+		moonModel.dispose();
 		modelBatch.dispose();
 	}
 }
